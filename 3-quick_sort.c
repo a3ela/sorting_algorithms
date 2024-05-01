@@ -1,84 +1,75 @@
 #include "sort.h"
 
 /**
- * quick_sort - sorts an array using quick sort algorithm
- * @array: pointer to the array
+ * quick_sort - sorts an array with the Quicksort algorithm
+ * @array: array of ints to sort
  * @size: size of the array
- * Return: void
  */
-
 void quick_sort(int *array, size_t size)
 {
-	if (size < 2 || array == NULL)
+	if (size < 2)
 		return;
 
-	qs(array, 0, (int)size - 1, size);
+	quick_recursion(array, 0, (int)size - 1, size);
 }
 
-
 /**
- * qs - recusion function of the quicksort algorithm
- * @arr: array
- * @low: first index
- * @high: last index
+ * quick_recursion - helper function for Quicksort
+ * @array: array to sort
+ * @left: index of the left element
+ * @right: index of the right element
  * @size: size of the array
- * Return: void
  */
-
-void qs(int *arr, int low, int high, size_t size)
+void quick_recursion(int *array, int left, int right, size_t size)
 {
-	int p;
+	int piv;
 
-	if (low >= high)
-		return;
-
-	p = partition(arr, low, high, size);
-
-	if (p - low > 1)
-		qs(arr, low, p - 1, size);
-	if (high - p > 1)
-		qs(arr, p + 1, high, size);
-}
-
-
-/**
- * partition - lomuto partition implementation
- * @arr: array
- * @low: first index of the partition
- * @high: last index of the partition
- * @size: size of the array
- * Return: new index of the pivot
- */
-int partition(int *arr, int low, int high, size_t size)
-{
-	int pivot = arr[high], i = low - 1, j, tmp;
-
-	for (j = low; j < high; j++)
+	if (left < right)
 	{
-		if (arr[j] < pivot)
+		piv = partition(array, left, right, size);
+		quick_recursion(array, left, piv - 1, size);
+		quick_recursion(array, piv + 1, right, size);
+	}
+}
+
+/**
+ * partition - gives a piv index for Quicksort
+ * @array: array to find the piv in
+ * @left: index of the left element
+ * @right: index of the right element
+ * @size: size of the array
+ *
+ * Return: the index of the piv element
+ */
+int partition(int *array, int left, int right, size_t size)
+{
+	int tmp, i;
+	int j;
+
+	i = left - 1;
+
+	for (j = left; j < right; j++)
+	{
+		if (array[j] < array[right])
 		{
-			++i;
-			if (j != i)
+			i++;
+			if (i != j)
 			{
-				/*swaping*/
-				tmp = arr[j];
-				arr[j] = arr[i];
-				arr[i] = tmp;
-				print_array(arr, size);
+				tmp = array[i];
+				array[i] = array[j];
+				array[j] = tmp;
+				print_array(array, size);
 			}
 		}
 	}
-	if (i < high - 1)
+
+	if (array[right] < array[i + 1])
 	{
-		if (arr[i + 1] != arr[high])
-		{
-			tmp = arr[high];
-			arr[high] = arr[i + 1];
-			arr[i + 1] = tmp;
-			print_array(arr, size);
-		}
-		return (i + 1);
+		tmp = array[i + 1];
+		array[i + 1] = array[right];
+		array[right] = tmp;
+		print_array(array, size);
 	}
 
-	return (high);
+	return (i + 1);
 }

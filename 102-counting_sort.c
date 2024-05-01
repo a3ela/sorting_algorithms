@@ -1,85 +1,44 @@
 #include "sort.h"
 
 /**
- * counting_sort - sorting an array using counting_sort
- * algorithm
- * @array: array
+ * counting_sort - sorts an array with the Counting sort algorithm
+ * @array: array to sort
  * @size: size of the array
- * Return: void
  */
-
 void counting_sort(int *array, size_t size)
 {
-	int *counter, *output, i, j, k;
+	int *count_arr, *out_arr, max, num, j, l;
+	size_t i, k, m, n;
 
-	if (array == NULL || size < 2)
+	if (size < 2)
 		return;
 
-	output = malloc(sizeof(int) * ((int)size + 1));
-	if (!output)
-		return;
-	k = get_biggest_num(array, size);
-	counter = malloc(sizeof(int) * (k + 1));
-	for (i = 0; i < k + 1; i++)
-		counter[i] = 0;
+	max = array[0];
+	for (i = 1; i < size; i++)
+		if (array[i] > max)
+			max = array[i];
 
-	if (!counter)
+	count_arr = malloc(sizeof(size_t) * (max + 1));
+	out_arr = malloc(sizeof(int) * size);
+
+	for (j = 0; j <= max; j++)
+		count_arr[j] = 0;
+	for (k = 0; k < size; k++)
 	{
-		free(output);
-		return;
+		num = array[k];
+		count_arr[num] += 1;
 	}
-
-	for (i = 0; i < (int)size; i++)
+	for (l = 1; l <= max; l++)
+		count_arr[l] += count_arr[l - 1];
+	print_array(count_arr, max + 1);
+	for (m = 0; m < size; m++)
 	{
-		j = array[i];
-		counter[j] += 1;
+		out_arr[count_arr[array[m]] - 1] = array[m];
+		count_arr[array[m]]--;
 	}
-	for (i = 1; i <= k + 1; i++)
-		counter[i] += counter[i - 1];
-	print_array(counter, k + 1);
-	for (i = (int)size - 1; i >= 0; i--)
-	{
-		j = array[i];
-		counter[j] -= 1;
-		output[counter[j]] = array[i];
-	}
-	free(counter);
-	fill_array(array, output, size);
-}
+	for (n = 0; n < size; n++)
+		array[n] = out_arr[n];
 
-
-/**
- * get_biggest_num - find the biggest number in an array
- * @array: the array
- * @size: size of the array
- * Return: the biggest number
- */
-
-int get_biggest_num(int *array, size_t size)
-{
-	int i, b = 0;
-
-	for (i = 0; i < (int)size; i++)
-		b = b < array[i] ? array[i] : b;
-
-	return (b);
-}
-
-
-/**
- * fill_array - fills array a with values in array b
- * @arra: array a
- * @arrb: array b
- * @size: size both arrays should be same size
- * Return: void
- */
-
-void fill_array(int *arra, int *arrb, size_t size)
-{
-	int i;
-
-	for (i = 0; i < (int)size; i++)
-		arra[i] = arrb[i];
-
-	free(arrb);
+	free(count_arr);
+	free(out_arr);
 }

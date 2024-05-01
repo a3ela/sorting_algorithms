@@ -1,93 +1,70 @@
 #include "sort.h"
 
 /**
- * quick_sort_hoare - sort array using quick_sort_hoare partition
- * @array: array
+ * quick_sort_hoare - sorts an array with the Quicksort algorithm
+ * @array: array of ints to sort
  * @size: size of the array
- * Return: void
  */
-
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (array == NULL || size < 2)
+	if (size < 2)
 		return;
-	qsh(array, 0, (int)size - 1, size);
+
+	quick_recursion(array, 0, (int)size - 1, size);
 }
 
 /**
- * qsh - quick sort recursive function
- * @array: array
- * @low: lowest index
- * @high: highest index
- * @size: size of array
- * Return: void
+ * quick_recursion - helper function for Quicksort
+ * @array: array to sort
+ * @left: index of the left element
+ * @right: index of the right element
+ * @size: size of the array
  */
-void qsh(int *array, int low, int high, size_t size)
+void quick_recursion(int *array, int left, int right, size_t size)
 {
-	if (low < high)
-	{
-		/* pi is partitioning index, arr[p] is now*/
-		/*at right place */
-		int p = partitionh(array, low, high, size);
+	int piv;
 
-		/* Separately sort elements before*/
-		/* partition and after partition*/
-		qsh(array, low, p - (p == high), size);
-		qsh(array, p - (p == high) + 1, high, size);
+	if (left < right)
+	{
+		piv = partition(array, left, right, size);
+		quick_recursion(array, left, piv - 1, size);
+		quick_recursion(array, piv, right, size);
 	}
 }
+
 /**
- * partitionh - hoare partition implementation
- * @arr: array
- * @lo: lowest index
- * @hi: hghest index
- * @size: size of array
- * Return: new pivot index
+ * partition - gives a piv index for Quicksort
+ * @array: array to find the piv in
+ * @left: index of the left element
+ * @right: index of the right element
+ * @size: size of the array
+ *
+ * Return: the index of the piv element
  */
-
-int partitionh(int *arr, int lo, int hi, size_t size)
+int partition(int *array, int left, int right, size_t size)
 {
-	int pivot = arr[hi], i, j;
+	int tmp, pivot = array[right];
+	size_t i, j;
 
-	i = lo - 1;
-
-	j = hi + 1;
-
+	i = left - 1;
+	j = right + 1;
 	while (1)
 	{
 		do {
-			i += 1;
-		} while (arr[i] < pivot);
-
+			i++;
+		} while (array[i] < pivot);
 		do {
-			j -= 1;
-		} while (arr[j] > pivot);
-
+			j--;
+		} while (array[j] > pivot);
 		if (i >= j)
-			return (j);
-
-		swap(arr, i, j, size);
+			return (i);
+		if (i != j)
+		{
+			tmp = array[i];
+			array[i] = array[j];
+			array[j] = tmp;
+			print_array(array, size);
+		}
 	}
-}
-
-/**
- * swap - swap 2 indexes in an array
- * @array: array
- * @i: index 1
- * @j: index 2
- * @size: size of array
- * Return: void
- */
-
-void swap(int *array, int i, int j, size_t size)
-{
-	int tmp;
-
-	if (array != NULL)
-	{
-		tmp = array[i];
-		array[i] = array[j];
-		array[j] = tmp;
-	}
-	print_array(array, size);
+	return (0);
 }

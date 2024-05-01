@@ -1,115 +1,78 @@
 #include "sort.h"
 
 /**
- * merge_sort - sorting an array using mergse sort algorithm
- * @array: array to sort
+ * merge_sort - sorts an array with the Merge Sort algorithm
+ * @array: array of ints to sort
  * @size: size of the array
- * Return: void
  */
-
 void merge_sort(int *array, size_t size)
 {
-	int *b;
+	int *arr;
 
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
 
-	b = malloc(sizeof(int) * size + 1);
-	if (!b)
-		return;
+	arr = malloc(sizeof(int) * size);
 
-	topdownmergesort(array, b, size);
-	free(b);
+	merge_recursion(arr, array, 0, size);
+	free(arr);
 }
 
 /**
- * topdownmergesort - Top Down Merge Sort
- * @a: array a
- * @b: array b
- * @n: size of array
- * Return: void
+ * merge_recursion - recursive function that merge sorts an array
+ * @arr: copy array
+ * @array: array to merge sort
+ * @left: index of the left element
+ * @right: index of the right element
  */
-
-void topdownmergesort(int *a, int *b, int n)
+void merge_recursion(int *arr, int *array, size_t left, size_t right)
 {
-	/* array int *a has the items to sort; array int *b is a work array.*/
-	copyarray(a, 0, n, b);           /* one time copy of int *a to int *b */
-	splitmerge(a, b, n, 0, n);   /* sort data from int *b into int *a */
+	size_t middle;
+
+	if (right - left > 1)
+	{
+		middle = (right - left) / 2 + left;
+		merge_recursion(arr, array, left, middle);
+		merge_recursion(arr, array, middle, right);
+		merge_subarray(arr, array, left, middle, right);
+	}
 }
 
 /**
- * splitmerge - Top Down Split Merge
- * @array: array a
- * @array_c: arrayb
- * @size: start index
- * @l: end index
- * @r: array a
- * Return: void
+ * merge_subarray - merges subarrays
+ * @arr: copy array
+ * @array: array to merge
+ * @left: index of the left element
+ * @middle: index of the middle element
+ * @right: index of the right element
  */
-
-void splitmerge(int *array, int *array_c, size_t size, size_t l, size_t r)
+void merge_subarray(int *arr, int *array, size_t left,
+		size_t middle, size_t right)
 {
-	size_t i, mid;
-
-	if ((r - l) <= 1)
-		return;
-	mid = (l + r) / 2;
-	splitmerge(array, array_c, size, l, mid);
-	splitmerge(array, array_c, size, mid, r);
-	for (i = l; i <= r + (r == size ? -1 : 0); i++)
-		array_c[i] = array[i];
-	topdownmerge(array, array_c, l, mid, r);
-}
-
-
-/**
- * topdownmerge - Merges an array that has been split using the
- * top-down approach.
- * @array: The array to merge.
- * @array_c: The temporary array.
- * @l: The left index of the split-array.
- * @m: The mid-point of the split-array.
- * @r: The right index of the split-array.
- */
-
-void topdownmerge(int *array, int *array_c, size_t l, size_t m, size_t r)
-{
-	size_t a = l, b = m, c;
+	size_t i, j, k = 0;
 
 	printf("Merging...\n");
 	printf("[left]: ");
-	print_array(array + l, m - l);
+	print_array(array + left, middle  - left);
 	printf("[right]: ");
-	print_array(array + (m), r - m);
-	for (c = l; c < r; c++)
+	print_array(array + middle, right - middle);
+
+	for (i = left, j = middle; i < middle && j < right; k++)
 	{
-		if ((a < m) && ((b >= r) || (array_c[a] <= array_c[b])))
-		{
-			array[c] = array_c[a++];
-		}
+		if (array[i] < array[j])
+			arr[k] = array[i++];
 		else
-		{
-			array[c] = array_c[b++];
-		}
+			arr[k] = array[j++];
 	}
+
+	while (i < middle)
+		arr[k++] = array[i++];
+	while (j < right)
+		arr[k++] = array[j++];
+
+	for (k = left, i = 0; k < right; k++)
+		array[k] = arr[i++];
+
 	printf("[Done]: ");
-	print_array(array + l, r - l);
-}
-
-/**
- * copyarray - copies array a to array b from ibegin
- * to iend
- * @a: array a
- * @ibegin: start index
- * @iend: end index
- * @b: array b
- * Return: void
- */
-
-void copyarray(int *a, int ibegin, int iend, int *b)
-{
-	int k;
-
-	for (k = ibegin; k < iend; k++)
-		b[k] = a[k];
+	print_array(array + left, right - left);
 }
